@@ -15,7 +15,7 @@ module.exports = {
     'react',
   ],
   rules: {
-    "no-underscore-dangle": ["error", { "allow": ["_id"]}],
-    "linebreak-style": 0
+    'no-underscore-dangle': ['error', { allow: ['_id'] }],
+    'linebreak-style': 0,
   },
 };
