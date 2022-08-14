@@ -5,7 +5,7 @@ const {
 
 router.get('/', getCards);
 router.post('/', createCard);
-router.get('/', deleteCard);
+router.get('/:cardId', deleteCard);
 router.put('/:cardId/likes', likeCard);
 router.delete('/:cardId/likes', dislikeCard);
 
