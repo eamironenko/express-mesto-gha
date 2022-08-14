@@ -1,9 +1,5 @@
 const User = require('../models/user');
 
-// GET /users — возвращает всех пользователей
-// GET /users/:userId - возвращает пользователя по _id
-// POST /users — создаёт пользователя
-
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
@@ -11,7 +7,7 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUserId = (req, res) => {
-  User.findById(req.user._id)
+  User.findById(req.params.userId)
     .then((user) => res.send({ data: user }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
