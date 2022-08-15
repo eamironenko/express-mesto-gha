@@ -35,7 +35,7 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(validationError.errorCode).send({ message: defaultError.message });
+        res.status(validationError.errorCode).send({ message: validationError.message });
       } else {
         res.status(defaultError.errorCode).send({ message: defaultError.message });
       }
@@ -55,7 +55,7 @@ module.exports.updateUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(validationError.errorCode).send({ message: defaultError.message });
+        res.status(validationError.errorCode).send({ message: validationError.message });
       } else {
         res.status(defaultError.errorCode).send({ message: defaultError.message });
       }
@@ -74,7 +74,7 @@ module.exports.updateUserAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(validationError.errorCode).send({ message: defaultError.message });
+        res.status(validationError.errorCode).send({ message: validationError.message });
       } else {
         res.status(defaultError.errorCode).send({ message: defaultError.message });
       }
