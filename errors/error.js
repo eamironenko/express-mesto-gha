@@ -26,7 +26,7 @@ const notFoundId = new Error({
 
 const defaultError = new Error({
   message: 'что-то пошло не так',
-  name: 'notFoundId',
+  name: 'something wrong',
   errorCode: '500',
 });
 
