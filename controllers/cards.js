@@ -34,7 +34,7 @@ module.exports.deleteCard = (req, res) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         res.status(validationError.errorCode).send({ message: validationError.message });
       } else {
         res.status(defaultError.errorCode).send({ message: defaultError.message });
