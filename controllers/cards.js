@@ -16,7 +16,7 @@ module.exports.createCard = (req, res) => {
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'validationError') {
+      if (err.name === 'ValidationError') {
         res.status(validationError.errorCode).send({ message: validationError.message });
       } else {
         res.status(defaultError.errorCode).send({ message: defaultError.message });
@@ -34,7 +34,7 @@ module.exports.deleteCard = (req, res) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'validationError') {
+      if (err.name === 'ValidationError') {
         res.status(validationError.errorCode).send({ message: validationError.message });
       } else {
         res.status(defaultError.errorCode).send({ message: defaultError.message });
