@@ -9,6 +9,24 @@ module.exports.getUsers = (req, res) => {
     .catch(() => res.status(defaultError.errorCode).send({ message: defaultError.message }));
 };
 
+module.exports.getUserCurrent = (req, res) => {
+  User.findById(req.params.userId)
+    .then((user) => {
+      if (user) {
+        res.status(200).send({ data: user });
+      } else {
+        res.status(notFoundId.errorCode).send({ message: notFoundId.message });
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(validationError.errorCode).send({ message: validationError.message });
+      } else {
+        res.status(defaultError.errorCode).send({ message: defaultError.message });
+      }
+    });
+};
+
 module.exports.getUserId = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
@@ -96,15 +114,15 @@ module.exports.login = (req, res) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
+      // создаем токен
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.send({ token });
       res.cookie('jwt', token, {
-        maxAge: 3600000 * 24 * 7,
+        maxAge: 3600 * 24 * 7,
         httpOnly: true,
       }).end();
     })
-    .catch((err) => {
-      // возвращаем ошибку аутентификации
+    .catch((err) => { // ошибка аутентификации
       res
         .status(401)
         .send({ message: err.message });
