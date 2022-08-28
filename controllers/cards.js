@@ -1,48 +1,52 @@
 const Card = require('../models/card');
-const { validationError, notFoundId, defaultError } = require('../errors/error');
+const Validation = require('../errors/Validation');
+const NotFoundPage = require('../errors/NotFoundPage');
+const DeleteErr = require('../errors/DeleteErr');
 
-// GET /cards — возвращает все карточки
-// POST /cards — создаёт карточку
-// DELETE /cards/:cardId — удаляет карточку по идентификатору
-
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => res.status(defaultError.errorCode).send({ message: defaultError.message }));
+    .catch((err) => next(err));
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(validationError.errorCode).send({ message: validationError.message });
-      } else {
-        res.status(defaultError.errorCode).send({ message: defaultError.message });
+      if (err.name === 'Validation') {
+        return next(new Validation(err.message));
       }
+      return next(err);
     });
 };
 
-module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+module.exports.deleteCard = (req, res, next) => {
+  Card.findById(req.params.cardId)
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundPage('Карточка не найдена');
+      }
+      const cardOwner = card.owner.toString();
+      if (cardOwner !== req.user._id) {
+        throw new DeleteErr('Карточку Нельзя удалить');
+      }
+    });
+  return Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (card) {
         res.status(200).send({ data: card });
-      } else {
-        res.status(notFoundId.errorCode).send({ message: notFoundId.message });
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(validationError.errorCode).send({ message: validationError.message });
-      } else {
-        res.status(defaultError.errorCode).send({ message: defaultError.message });
+        return next(new Validation('Переданы некорректные данные'));
       }
+      return next(err);
     });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
@@ -52,19 +56,18 @@ module.exports.likeCard = (req, res) => {
       if (card) {
         res.status(200).send({ data: card });
       } else {
-        res.status(notFoundId.errorCode).send({ message: notFoundId.message });
+        throw new NotFoundPage('Карточка не найдена');
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(validationError.errorCode).send({ message: validationError.message });
-      } else {
-        res.status(defaultError.errorCode).send({ message: defaultError.message });
+        return next(new Validation('Переданы некорректные данные'));
       }
+      return next(err);
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
@@ -74,14 +77,13 @@ module.exports.dislikeCard = (req, res) => {
       if (card) {
         res.status(200).send({ data: card });
       } else {
-        res.status(notFoundId.errorCode).send({ message: notFoundId.message });
+        throw new NotFoundPage('Карточка не найдена');
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(validationError.errorCode).send({ message: validationError.message });
-      } else {
-        res.status(defaultError.errorCode).send({ message: defaultError.message });
+        return next(new Validation('Переданы некорректные данные'));
       }
+      return next(err);
     });
 };

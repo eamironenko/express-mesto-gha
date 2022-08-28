@@ -5,7 +5,7 @@ const {
 } = require('../controllers/users');
 
 router.get('/', auth, getUsers);
-router.get ('/me', auth, getUserCurrent);
+router.get('/me', auth, getUserCurrent);
 router.get('/:userId', auth, getUserId);
 router.patch('/me', updateUser);
 router.patch('/me/avatar', updateUserAvatar);

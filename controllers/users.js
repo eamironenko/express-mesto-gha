@@ -1,51 +1,46 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const { notFoundId, defaultError, validationError } = require('../errors/error');
+const NotFoundPage = require('../errors/NotFoundPage');
+const Validation = require('../errors/Validation');
+const UniqueErr = require('../errors/UniqueErr');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => res.status(defaultError.errorCode).send({ message: defaultError.message }));
+    .catch((err) => next(err));
 };
 
-module.exports.getUserCurrent = (req, res) => {
+module.exports.getUserCurrent = (req, res, next) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (user) {
+        res.status(200).send({ data: user });
+      } else {
+        throw new NotFoundPage('Пользователь не найден');
+      }
+    })
+    .catch((err) => next(err));
+};
+
+module.exports.getUserId = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (user) {
         res.status(200).send({ data: user });
       } else {
-        res.status(notFoundId.errorCode).send({ message: notFoundId.message });
+        throw new NotFoundPage('Пользователь не найден');
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(validationError.errorCode).send({ message: validationError.message });
-      } else {
-        res.status(defaultError.errorCode).send({ message: defaultError.message });
+        return next(new Validation('Переданы некорректные данные'));
       }
+      return next(err);
     });
 };
 
-module.exports.getUserId = (req, res) => {
-  User.findById(req.params.userId)
-    .then((user) => {
-      if (user) {
-        res.status(200).send({ data: user });
-      } else {
-        res.status(notFoundId.errorCode).send({ message: notFoundId.message });
-      }
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(validationError.errorCode).send({ message: validationError.message });
-      } else {
-        res.status(defaultError.errorCode).send({ message: defaultError.message });
-      }
-    });
-};
-
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
       name: req.body.name,
@@ -63,54 +58,54 @@ module.exports.createUser = (req, res) => {
       _id: user._id,
     }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(validationError.errorCode).send({ message: validationError.message });
-      } else {
-        res.status(defaultError.errorCode).send({ message: defaultError.message });
+      if (err.name === 'Validation') {
+        if (err.message.includes('unique')) {
+          return next(new UniqueErr(err.message.replace('user validation failed:', 'пользователь не создан')));
+        }
+        return next(new Validation(err.message.replace('user validation failed:', 'пользователь не создан')));
       }
+      return next(err);
     });
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (user) {
         res.status(200).send({ data: user });
       } else {
-        res.status(notFoundId.errorCode).send({ message: notFoundId.message });
+        throw new NotFoundPage('Пользователь не найден');
       }
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(validationError.errorCode).send({ message: validationError.message });
-      } else {
-        res.status(defaultError.errorCode).send({ message: defaultError.message });
+      if (err.name === 'Validation') {
+        return next(new Validation(err.message));
       }
+      return next(err);
     });
 };
 
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (user) {
         res.status(200).send({ data: user });
       } else {
-        res.status(notFoundId.errorCode).send({ message: notFoundId.message });
+        throw new NotFoundPage('Пользователь не найден');
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(validationError.errorCode).send({ message: validationError.message });
-      } else {
-        res.status(defaultError.errorCode).send({ message: defaultError.message });
+      if (err.name === 'Validation') {
+        return next(new Validation(err.message));
       }
+      return next(err);
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -122,9 +117,5 @@ module.exports.login = (req, res) => {
         httpOnly: true,
       }).end();
     })
-    .catch((err) => { // ошибка аутентификации
-      res
-        .status(401)
-        .send({ message: err.message });
-    });
+    .catch((err) => next(err));
 };
