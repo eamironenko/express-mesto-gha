@@ -8,7 +8,7 @@ const UniqueErr = require('../errors/UniqueErr');
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 module.exports.getUserCurrent = (req, res, next) => {
