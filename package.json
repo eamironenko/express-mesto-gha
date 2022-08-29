@@ -12,6 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/eamironenko/express-mesto-gha.git"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {

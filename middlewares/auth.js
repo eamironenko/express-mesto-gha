@@ -5,11 +5,11 @@ module.exports.auth = (req, res, next) => {
   const { authorization } = req.headers;
 
   // убеждаемся, что он есть или начинается с bearer
-  if (!authorization || !authorization.startsWith('Bearer')) {
+  if (!authorization || !authorization.startsWith('Bearer ')) {
     throw new AuthErr('Нужно авторизоваться');
   }
   // извлечем токен
-  const token = authorization.replace('Bearer', '');
+  const token = authorization.replace('Bearer ', '');
   let payload;
 
   // верифицируем токен

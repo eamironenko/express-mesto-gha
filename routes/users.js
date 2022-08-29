@@ -1,9 +1,9 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
-const auth = require('../middlewares/auth');
 const {
   getUsers, getUserId, getUserCurrent, updateUser, updateUserAvatar,
 } = require('../controllers/users');
+const auth = require('../middlewares/auth');
 
 router.get('/', auth, getUsers);
 router.get('/me', auth, getUserCurrent);

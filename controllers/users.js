@@ -15,7 +15,7 @@ module.exports.getUserCurrent = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (user) {
-        res.send({ data: user });
+        res.status(200).send({ data: user });
       } else {
         throw new NotFoundPage('Пользователь не найден');
       }

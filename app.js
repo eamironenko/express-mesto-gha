@@ -1,19 +1,20 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { celebrate, Joi, errors } = require('celebrate');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const userRouter = require('./routes/users');
+const { celebrate, Joi, errors } = require('celebrate');
 const cardRouter = require('./routes/cards');
-const { login, createUser } = require('./controllers/users');
+const userRouter = require('./routes/users');
 const auth = require('./middlewares/auth');
+const { login, createUser } = require('./controllers/users');
+
 const NotFoundPage = require('./errors/NotFoundPage');
 
 const { PORT = 3000 } = process.env;
 const app = express();
+app.use(cookieParser());
 
 app.use(bodyParser.json());
-app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
