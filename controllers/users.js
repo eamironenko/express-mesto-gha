@@ -78,7 +78,6 @@ module.exports.updateUser = (req, res, next) => {
         throw new NotFoundPage('Пользователь не найден');
       }
     })
-    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'Validation') {
         return next(new Validation(err.message));

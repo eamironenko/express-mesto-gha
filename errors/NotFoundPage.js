@@ -1,8 +1,8 @@
-class NotFoundPageErr extends Error {
+class NotFoundPage extends Error {
   constructor(message) {
     super(message);
     this.statusCode = 404;
   }
 }
 
-module.exports = NotFoundPageErr;
+module.exports = NotFoundPage;

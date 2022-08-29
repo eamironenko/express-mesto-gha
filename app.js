@@ -3,11 +3,10 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi, errors } = require('celebrate');
-const cardRouter = require('./routes/cards');
-const userRouter = require('./routes/users');
+const cardsRouter = require('./routes/cards');
+const usersRouter = require('./routes/users');
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
-
 const NotFoundPage = require('./errors/NotFoundPage');
 
 const { PORT = 3000 } = process.env;
@@ -36,8 +35,8 @@ app.post('/signup', celebrate({
 }), createUser);
 
 // роуты требуют авторизации
-app.use('/users', userRouter);
-app.use('/cards', cardRouter);
+app.use('/users', usersRouter);
+app.use('/cards', cardsRouter);
 app.use('*', auth, () => {
   throw new NotFoundPage('Страница не найдена');
 });

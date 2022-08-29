@@ -6,7 +6,7 @@ const DeleteErr = require('../errors/DeleteErr');
 module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 module.exports.createCard = (req, res, next) => {
@@ -34,9 +34,7 @@ module.exports.deleteCard = (req, res, next) => {
     });
   return Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
-      if (card) {
-        res.status(200).send({ data: card });
-      }
+      res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
