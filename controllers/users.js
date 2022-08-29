@@ -117,5 +117,5 @@ module.exports.login = (req, res, next) => {
         httpOnly: true,
       }).end();
     })
-    .catch((err) => next(err));
+    .catch(next);
 };
