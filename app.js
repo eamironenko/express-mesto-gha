@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const userRouter = require('./routes/users');
@@ -34,8 +34,6 @@ app.post('/signup', celebrate({
   }),
 }), createUser);
 
-// авторизация
-app.use(auth);
 // роуты требуют авторизации
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
@@ -43,6 +41,7 @@ app.use('*', auth, () => {
   throw new NotFoundPage('Страница не найдена');
 });
 
+app.use(errors());
 app.use((err, req, res, next) => {
   // если у ошибки нет статуса, выставляем 500
   const { statusCode = 500, message } = err;
