@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const AuthErr = require('../errors/AuthErr');
 
-const auth = (req, res, next) => {
+module.exports.auth = (req, res, next) => {
   const { authorization } = req.headers;
 
   // убеждаемся, что он есть или начинается с bearer
@@ -21,5 +21,3 @@ const auth = (req, res, next) => {
   req.user = payload;
   next();
 };
-
-module.exports = { auth };

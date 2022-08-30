@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi, errors } = require('celebrate');
-const cardsRouter = require('./routes/cards');
-const usersRouter = require('./routes/users');
+// const cardRouter = require('./routes/cards');
+// const userRouter = require('./routes/users');
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 const NotFoundPage = require('./errors/NotFoundPage');
@@ -35,8 +35,9 @@ app.post('/signup', celebrate({
 }), createUser);
 
 // роуты требуют авторизации
-app.use('/users', usersRouter);
-app.use('/cards', cardsRouter);
+app.use('/users', require('./routes/users'));
+app.use('/cards', require('./routes/cards'));
+
 app.use('*', auth, () => {
   throw new NotFoundPage('Страница не найдена');
 });
