@@ -4,8 +4,8 @@ const { celebrate, Joi, errors } = require('celebrate');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { login, createUser } = require('./controllers/users');
-const auth = require('./middlewares/auth');
 const NotFoundPage = require('./errors/NotFoundPage');
+const auth = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
 const app = express();

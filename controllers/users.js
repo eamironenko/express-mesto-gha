@@ -8,7 +8,7 @@ const UniqueErr = require('../errors/UniqueErr');
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(next);
+    .catch((err) => next(err));
 };
 
 module.exports.getUserCurrent = (req, res, next) => {
@@ -20,7 +20,7 @@ module.exports.getUserCurrent = (req, res, next) => {
         throw new NotFoundPage('Пользователь не найден');
       }
     })
-    .catch(next);
+    .catch((err) => next(err));
 };
 
 module.exports.getUserId = (req, res, next) => {
@@ -115,5 +115,5 @@ module.exports.login = (req, res, next) => {
         httpOnly: true,
       }).end();
     })
-    .catch(next);
+    .catch((err) => next(err));
 };
