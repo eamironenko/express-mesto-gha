@@ -31,10 +31,10 @@ module.exports.deleteCard = (req, res, next) => {
       if (cardOwner !== req.user._id) {
         throw new DeleteErr('Карточку Нельзя удалить');
       }
-    });
-  return Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => {
-      res.status(200).send({ data: card });
+      return Card.findByIdAndRemove(req.params.cardId)
+        .then((cardDel) => {
+          res.status(200).send({ data: cardDel });
+        });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
