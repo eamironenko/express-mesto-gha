@@ -58,13 +58,14 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'Validation') {
-        if (err.message.includes('unique')) {
-          return next(new UniqueErr(err.message.replace('user validation failed:', 'пользователь не создан')));
-        }
-        return next(new Validation(err.message.replace('user validation failed:', 'пользователь не создан')));
+        throw new Validation('Переды некорректные данные пользователя');
+      } else if (err.message.includes('unique')) {
+        throw new UniqueErr('Пользователь с такм email уже существует');
+      } else {
+        next(err);
       }
-      return next(err);
-    });
+    })
+    .catch(next);
 };
 
 module.exports.updateUser = (req, res, next) => {
