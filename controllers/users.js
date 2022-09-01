@@ -15,7 +15,7 @@ module.exports.getUserCurrent = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (user) {
-        res.status(200).send({ data: user });
+        res.send({ data: user });
       } else {
         throw new NotFoundPage('Пользователь не найден');
       }
@@ -27,7 +27,7 @@ module.exports.getUserId = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (user) {
-        res.status(200).send({ data: user });
+        res.send({ data: user });
       } else {
         throw new NotFoundPage('Пользователь не найден');
       }
@@ -58,14 +58,13 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'Validation') {
-        throw new Validation('Переды некорректные данные пользователя');
+        next(new Validation('Переды некорректные данные пользователя'));
       } else if (err.message.includes('unique')) {
-        throw new UniqueErr('Пользователь с такм email уже существует');
+        next(new UniqueErr('Пользователь с таким email уже существует'));
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports.updateUser = (req, res, next) => {
@@ -73,7 +72,7 @@ module.exports.updateUser = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (user) {
-        res.status(200).send({ data: user });
+        res.send({ data: user });
       } else {
         throw new NotFoundPage('Пользователь не найден');
       }
@@ -91,7 +90,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (user) {
-        res.status(200).send({ data: user });
+        res.send({ data: user });
       } else {
         throw new NotFoundPage('Пользователь не найден');
       }
@@ -111,7 +110,7 @@ module.exports.login = (req, res, next) => {
       // создаем токен
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.send({ token });
-      res.cookie('jwt', token, {
+      res.cookie('jwt', {
         maxAge: 3600 * 24 * 7,
         httpOnly: true,
       }).end();
