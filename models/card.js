@@ -10,7 +10,7 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
-    match: /^(http|https|ftp|):\/\/|[a-zA-Z0-9\-\\.]+\.[a-zA-Z](:[a-zA-Z0-9]*)?\/?([\w#!:.?+=&%@!\-/])*[^\s]$/g,
+    match: /^(http|https|ftp|):\/\/|[a-zA-Z0-9\-\\.]+\.[a-zA-Z](:[a-zA-Z0-9]*)?\/?([\w#!:.?+=&%@!\-/])*[^\s]$/i,
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
