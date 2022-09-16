@@ -1,19 +1,45 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
-const { celebrate, Joi, errors } = require('celebrate');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const { celebrate, Joi, errors } = require('celebrate');
+const cors = require('cors');
+
 const { login, createUser } = require('./controllers/users');
-const NotFoundPage = require('./errors/NotFoundPage');
 const auth = require('./middlewares/auth');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const NotFoundPage = require('./errors/NotFoundPage');
 
 const { PORT = 3000 } = process.env;
 const app = express();
-app.use(cookieParser());
+mongoose.connect('mongodb://localhost:27017/mestodb');
 
+const options = {
+  origin: [
+    'http://localhost:3000',
+    'https://mironenko.students.nomoredomains.sbs/',
+    'https://github.com/eamironenko/react-mesto-api-full.git',
+  ],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  allowedHeaders: ['Accept', 'X-Requested-With', 'Content-Type', 'Origin', 'Authorization'],
+  credentials: true,
+};
+
+app.use('*', cors(options));
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-mongoose.connect('mongodb://localhost:27017/mestodb');
+app.use(requestLogger);
+
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
 
 // не требуют авторизации
 app.post('/signin', celebrate({
@@ -40,6 +66,7 @@ app.use('*', auth, () => {
   throw new NotFoundPage('Страница не найдена');
 });
 
+app.use(errorLogger);
 app.use(errors());
 app.use((err, req, res, next) => {
   // если у ошибки нет статуса, выставляем 500
@@ -56,5 +83,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
+  console.log(`App listening on port ${PORT}`); // сервер на 3000 порту
 });
