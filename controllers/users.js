@@ -5,7 +5,7 @@ const NotFoundPage = require('../errors/NotFoundPage');
 const Validation = require('../errors/Validation');
 const UniqueErr = require('../errors/UniqueErr');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
+// const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -109,12 +109,13 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      // создаем токен
-      const token = jwt.sign(
-        { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-        { expiresIn: '7d' },
-      );
+      // создаем
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      // const token = jwt.sign(
+      // { _id: user._id },
+      // NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+      // { expiresIn: '7d' },
+      // );
       res.send({ token });
     })
     .catch((err) => next(err));
