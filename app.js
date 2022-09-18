@@ -19,7 +19,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 const options = {
   origin: [
     'http://localhost:3010',
-    'https://mironenko.students.nomoredomains.sbs/',
+    'https://mironenko.students.nomoredomains.sbs',
     'https://github.com/eamironenko/react-mesto-api-full.git',
   ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
