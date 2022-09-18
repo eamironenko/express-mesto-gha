@@ -12,13 +12,8 @@ const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const NotFoundPage = require('./errors/NotFoundPage');
 
-const { PORT = 3000 } = process.env;
-const app = express();
-mongoose.connect('mongodb://localhost:27017/mestodb');
-
 const options = {
   origin: [
-    'https://localhost:3010',
     'http://localhost:3010',
     'https://mironenko.students.nomoredomains.sbs',
     'http://mironenko.students.nomoredomains.sbs',
@@ -31,7 +26,10 @@ const options = {
   credentials: true,
 };
 
+const app = express();
 app.use('*', cors(options));
+const { PORT = 3000 } = process.env;
+mongoose.connect('mongodb://localhost:27017/mestodb');
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
